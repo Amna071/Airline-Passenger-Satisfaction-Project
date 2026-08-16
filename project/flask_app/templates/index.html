@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satisfaction Forecast · Airline Ops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="board-strip" aria-hidden="true">
+  <span>GATE FORECASTING SYSTEM</span><span>·</span><span>MODEL: {{ model_name.upper() }}</span><span>·</span>
+  <span>GATE FORECASTING SYSTEM</span><span>·</span><span>MODEL: {{ model_name.upper() }}</span><span>·</span>
+</div>
+
+<main class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">PASSENGER EXPERIENCE / PREDICTIVE OPS</p>
+    <h1 class="flap-title" id="flapTitle" aria-label="Satisfaction Forecast">
+      <!-- letters injected by JS as split-flap tiles -->
+    </h1>
+    <p class="hero-sub">Enter a passenger &amp; flight profile below to forecast whether they'll land <em>satisfied</em> or <em>neutral / dissatisfied</em> — scored by a {{ model_name }} classifier trained on 75k+ historical flights.</p>
+  </header>
+
+  <form id="forecastForm" class="ticket">
+
+    <div class="ticket-row ticket-head">
+      <div>
+        <span class="tk-label">BOARDING PASS</span>
+        <span class="tk-value tk-mono">SIM-CLASS</span>
+      </div>
+      <div class="tk-logo">✈</div>
+    </div>
+
+    <section class="tk-section">
+      <h2 class="tk-h">01 · Trip details</h2>
+      <div class="grid grid-3">
+        {% for field in visible_categorical_fields %}
+        <div class="field">
+          <label for="{{ field }}">{{ field }}</label>
+          <select id="{{ field }}" name="{{ field }}" required>
+            {% for opt in category_options[field] %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+          </select>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <div class="perforation" aria-hidden="true"></div>
+
+    <section class="tk-section">
+      <h2 class="tk-h">02 · Service ratings <span class="tk-h-hint">0 = not applicable · 5 = excellent</span></h2>
+      <div class="grid grid-2 sliders">
+        {% for field in rating_fields %}
+        <div class="field slider-field">
+          <label for="{{ field }}">{{ field }} <span class="slider-val" data-for="{{ field }}">3</span></label>
+          <input type="range" id="{{ field }}" name="{{ field }}" min="0" max="5" step="1" value="3">
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <div class="perforation" aria-hidden="true"></div>
+
+    <div class="tk-section submit-row">
+      <button type="submit" class="run-btn">
+        <span>RUN FORECAST</span><span class="arrow">→</span>
+      </button>
+      <p class="submit-hint" id="formError"></p>
+    </div>
+  </form>
+
+  <section id="resultStub" class="stub" hidden>
+    <div class="stub-inner">
+      <div class="stub-top">
+        <span class="tk-label">FORECAST RESULT</span>
+        <span class="tk-mono" id="resultModel"></span>
+      </div>
+      <div class="stub-verdict">
+        <div class="stamp" id="stampBox">
+          <span id="stampText">—</span>
+        </div>
+        <div class="stub-metrics">
+          <div class="metric">
+            <span class="metric-label">Confidence</span>
+            <span class="metric-value tk-mono" id="confidenceValue">0.0%</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Satisfied probability</span>
+            <span class="metric-value tk-mono" id="probValue">0.0%</span>
+          </div>
+        </div>
+      </div>
+      <div class="barcode" aria-hidden="true"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <p>Trained locally on the Airline Passenger Satisfaction dataset · Not affiliated with any real airline.</p>
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
